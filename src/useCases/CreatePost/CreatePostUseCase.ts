@@ -11,7 +11,6 @@ export class CreatePostUseCase {
   async execute(data: ICreatePostRequestDTO) {
 
     const postTitleAlreadyExist = await this.postRepository.findByTitle(data.title);
-
     if (postTitleAlreadyExist) {
       throw new Error('Already exists a post with title');
     }

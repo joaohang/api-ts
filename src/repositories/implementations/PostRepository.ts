@@ -1,32 +1,35 @@
 import { Post } from "../../entities/Post";
+import { UpdatePost } from "../../entities/UpdatePost";
 import { IPostRepository } from "../IPostRepository";
+import { database } from "../../external/Database";
 
 export class PostRepository implements IPostRepository {
 
-  private posts: Post[] = [];
-
   async findAll(): Promise<Post[]> {
-    return this.posts;
+    const posts = await database.select('*').from('post');
+    return posts;
   }
 
-  async findById(id: string): Promise<Post> {
-    return this.posts.filter(post => post.id == id)[0];
+  async findById(id: string): Promise<any> {
+    const post = await database.select('*').from('post').where({ id: id });
+    return post.length > 0 ? post[0] : undefined;
   }
 
-  async findByTitle(title: string): Promise<Post> {
-    return this.posts.filter(post => post.title == title)[0];
+  async findByTitle(title: string): Promise<any> {
+    const post = await database.select('*').from('post').where({ title: title });
+    return post.length > 0 ? post[0] : undefined;
   }
 
   async save(post: Post): Promise<void> {
-    this.posts.push(post);
+    await database('post').insert(post);
   }
-  //Como fazer isso ? Ele recebe post ou id e outras variaveis
-  // fazer um IPostUpdate
-  async update(post: Post): Promise<void> {
 
+  async update(post: UpdatePost): Promise<void> {
+    console.log(post);
+    await database('post').where({ id: post.id }).update(post);
   }
   async deleteById(id: string): Promise<void> {
-    this.posts.filter(post => post.id != id)[0];
+    await database('post').where({ id: id }).del();
   }
 
 }
